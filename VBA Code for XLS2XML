@@ -1,0 +1,201 @@
+'////VBA Code////
+
+Sub EXCLUDEDATA()
+
+'lets app know you're going to use a certain kinda variable
+
+    Dim DATA_OLD As Worksheet, DATA_NEW As Worksheet, CodeGen As Worksheet
+    Dim VAR_INDEXROW As Long, VAR_INDEXCOLUMN As Long
+    Dim VAR_ROW As Long, VAR_COLUMN As Long
+    Dim VAR_BLANKROW As Long, VAR_BLANKCOLUMN As Long
+    Dim STUDY_COLUMN As Long, ID_COLUMN As Long
+    Dim VAR_INDEXCOLUMNWRITE As Long
+    Dim CHILD1_NAME As String, CHILD1_START As Boolean, CHILD1_END As Boolean
+    Dim CHILD2_NAME As String
+
+'tells app whaich specific thing will be that variable: SET applies to workbook objects
+
+    Set DATA_OLD = ThisWorkbook.Worksheets("DATA_OLD")
+    Set DATA_NEW = ThisWorkbook.Worksheets("DATA_NEW")
+    Set CodeGen = ThisWorkbook.Worksheets("CODEGEN")
+
+'tells app which specific thing will be that variable: no SET, = only is for abstract variables
+
+    ID_COLUMN = 1
+    STUDY_COLUMN = 2
+    VAR_BLANKROW = 1
+    VAR_BLANKCOLUMN = 3
+    VAR_INDEXCOLUMNWRITE = 1
+
+    For VAR_INDEXROW = 1 To 1
+            For VAR_INDEXCOLUMN = 1 To 10
+                If Not DATA_OLD.Cells(1, VAR_INDEXCOLUMN).Value Like "*ID*" _
+                And Not DATA_OLD.Cells(1, VAR_INDEXCOLUMN).Value Like "*Study*" _
+                And Not DATA_OLD.Cells(1, VAR_INDEXCOLUMN).Value Like "*Group*" _
+                Then
+                    DATA_NEW.Cells(VAR_BLANKROW, VAR_INDEXCOLUMNWRITE).Value = DATA_OLD.Cells(VAR_INDEXROW, VAR_INDEXCOLUMN).Value
+                    DATA_NEW.Cells(VAR_BLANKROW, VAR_INDEXCOLUMNWRITE).Style = "Heading 1"
+                    Application.CutCopyMode = False
+                    VAR_INDEXCOLUMNWRITE = VAR_INDEXCOLUMNWRITE + 1
+                End If
+            Next VAR_INDEXCOLUMN
+            Application.CutCopyMode = False
+            VAR_BLANKROW = VAR_BLANKROW + 1
+            VAR_INDEXCOLUMNWRITE = 1
+    Next VAR_INDEXROW
+
+    For VAR_INDEXROW = 2 To 10
+        If DATA_OLD.Cells(VAR_INDEXROW, STUDY_COLUMN).Value Like "*Study1" Then
+            For VAR_INDEXCOLUMN = 1 To 10
+                If Not DATA_OLD.Cells(1, VAR_INDEXCOLUMN).Value Like "*ID*" _
+                And Not DATA_OLD.Cells(1, VAR_INDEXCOLUMN).Value Like "*Study*" _
+                And Not DATA_OLD.Cells(1, VAR_INDEXCOLUMN).Value Like "*Group*" _
+                Then
+                
+                'put parent_start stuff in here (IF VARINDEXCOLUMN = 1)
+                
+                'put parent_end stuff in here (IF VARINDEXCOLUMN = 10)
+                
+                
+                    If Not DATA_OLD.Cells(VAR_INDEXROW, VAR_INDEXCOLUMN).Value = "" Then
+
+
+'///// CHILD1_START ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        If DATA_NEW.Cells(1, VAR_INDEXCOLUMNWRITE).Value = "GROUP" Then
+
+                            CHILD1_NAME = DATA_OLD.Cells(1, VAR_INDEXCOLUMN).Value
+                            
+                            DATA_NEW.Cells(VAR_BLANKROW, VAR_INDEXCOLUMNWRITE).Value = _
+                            "<" & DATA_OLD.Cells(1, VAR_INDEXCOLUMN).Value & " = """ & _
+                            DATA_OLD.Cells(VAR_INDEXROW, VAR_INDEXCOLUMN).Value & _
+                            """>"
+                            Application.CutCopyMode = False
+                            
+                            
+                            
+                            
+                            'Put child 2:3 stuff in here
+'                                <CHILD1_START>
+'                                <CHILD2_START>
+'                                <CHILD3_START>
+'
+'
+'                                <CHILD3_END>
+'                                <CHILD2_END>
+'                                <CHILD1_END>
+'
+'                                <ELSE>
+                            
+                            
+'///// CHILD1 and 2_END ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            
+                        ElseIf DATA_NEW.Cells(1, VAR_INDEXCOLUMNWRITE).Value = "Subcategory2" Then
+                        
+                            DATA_NEW.Cells(VAR_BLANKROW, VAR_INDEXCOLUMNWRITE).Value = _
+                            "<" & DATA_OLD.Cells(1, VAR_INDEXCOLUMN).Value & " >" & _
+                            DATA_OLD.Cells(VAR_INDEXROW, VAR_INDEXCOLUMN).Value & _
+                            "</" & DATA_OLD.Cells(1, VAR_INDEXCOLUMN).Value & ">" & _
+                            "</" & _
+                            CHILD1_NAME & _
+                            ">" & _
+                            "</" & _
+                            CHILD2_NAME & _
+                            ">"
+                            Application.CutCopyMode = False
+                        
+                        Else
+                        
+                            DATA_NEW.Cells(VAR_BLANKROW, VAR_INDEXCOLUMNWRITE).Value = _
+                                "<" & DATA_OLD.Cells(1, VAR_INDEXCOLUMN).Value & ">" & _
+                                DATA_OLD.Cells(VAR_INDEXROW, VAR_INDEXCOLUMN).Value & _
+                                "</" & DATA_OLD.Cells(1, VAR_INDEXCOLUMN).Value & ">"
+                                Application.CutCopyMode = False
+                                
+                        End If
+
+                    End If
+                    
+                    VAR_INDEXCOLUMNWRITE = VAR_INDEXCOLUMNWRITE + 1
+                End If
+            Next VAR_INDEXCOLUMN
+            Application.CutCopyMode = False
+            VAR_BLANKROW = VAR_BLANKROW + 1
+        End If
+        VAR_INDEXCOLUMNWRITE = 1
+    Next VAR_INDEXROW
+
+End Sub
+
+Sub FINDDATA()
+
+    Dim DATA_OLD As Worksheet, DATA_NEW As Worksheet, CodeGen As Worksheet
+    Dim VAR_INDEXROW As Long
+    Dim VAR_ROW As Long, VAR_COLUMN As Long
+    Dim VAR_BLANKROW As Long, VAR_BLANKCOLUMN As Long
+    Dim STUDY_COLUMN As Long, ID_COLUMN As Long
+
+    Set DATA_OLD = ThisWorkbook.Worksheets("DATA_OLD")
+    Set DATA_NEW = ThisWorkbook.Worksheets("DATA_NEW")
+    Set CodeGen = ThisWorkbook.Worksheets("CODEGEN")
+
+    ID_COLUMN = 1
+    STUDY_COLUMN = 2
+    VAR_BLANKROW = 1
+    VAR_BLANKCOLUMN = 3
+
+'Find Study1 in DATA, copy to COPY, add 1 to copy range, repeat
+
+    For VAR_INDEXROW = 1 To 10
+        If DATA_OLD.Cells(VAR_INDEXROW, STUDY_COLUMN).Value Like "*Study1" Then
+            DATA_NEW.Cells(VAR_BLANKROW, 1).Value = DATA_OLD.Cells(VAR_INDEXROW, ID_COLUMN).Value
+            DATA_NEW.Cells(VAR_BLANKROW, 2).Value = DATA_OLD.Cells(VAR_INDEXROW, STUDY_COLUMN).Value
+            Application.CutCopyMode = False
+            VAR_BLANKROW = VAR_BLANKROW + 1
+        End If
+    Next VAR_INDEXROW
+
+End Sub
+
+
+'    Sub FINDDATA_V1()
+
+'        Dim DATA As Worksheet, COPY As Worksheet, CODEGEN As Worksheet
+'        Dim VAR1 As Long, VAR2 As Long
+'        Dim VAR_ROW As Long
+
+'        Set DATA = ThisWorkbook.Worksheets("DATA")
+'        Set COPY = ThisWorkbook.Worksheets("COPY")
+'        Set CODEGEN = ThisWorkbook.Worksheets("CODEGEN")
+
+'        VAR2 = 1
+
+'    'Find Study1 in DATA, copy to COPY, add 1 to copy range, repeat
+
+'        For VAR1 = 1 To 10
+'            If DATA.Cells(VAR1, 2).Value Like "Study1" Then
+'                VAR_ROW = DATA.Cells(VAR1, 1).Row
+'                DATA.Rows(VAR_ROW).COPY
+'                COPY.Cells(VAR2, 1).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+'                Application.CutCopyMode = False
+'                VAR2 = VAR2 + 1
+'            End If
+'        Next VAR1
+
+'        VAR2 = VAR2 + 1
+
+'    ' Find Study2 in DATA, copy to COPY, add 1 to copy range, repeat
+
+'        For VAR1 = 1 To 10
+
+'            If DATA.Cells(VAR1, 2).Value Like "Study2" Then
+'                VAR_ROW = DATA.Cells(VAR1, 1).Row
+'                DATA.Rows(VAR_ROW).COPY
+'                COPY.Cells(VAR2, 1).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+'                Application.CutCopyMode = False
+'                VAR2 = VAR2 + 1
+'            End If
+
+'        Next VAR1
+
+'    End Sub
+
